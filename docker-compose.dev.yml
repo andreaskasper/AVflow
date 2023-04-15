@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-web
+    restart: always
+#    environment:
+    ports:
+    - 80
+    volumes:
+    - ./src/html/:/var/www/html/:ro
+  worker-hash:
+    build:
+      context: .
+      dockerfile: Dockerfile-cli
+#    restart: always
+#    environment:
+    volumes:
+    - ./src/html/:/app/:ro
+  worker-conv:
+    build:
+      context: .
+      dockerfile: Dockerfile-cli
+#    restart: always
+#    environment:
+    volumes:
+    - ./src/html/:/app/:ro 

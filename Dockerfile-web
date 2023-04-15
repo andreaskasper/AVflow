@@ -1,0 +1,10 @@
+FROM php:8-apache
+
+LABEL org.opencontainers.image.authors="Andreas Kasper <andreas.kasper.github@goo1.de>"
+
+HEALTHCHECK --interval=5m --timeout=10s \
+    CMD curl -f http://localhost:80/ || exit 1
+
+RUN a2enmod headers rewrite
+
+ADD /src/html /var/www/html/

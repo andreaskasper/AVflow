@@ -8,15 +8,17 @@ services:
     restart: always
 #    environment:
     ports:
-    - 80
+    - 8080:80
     volumes:
     - ./src/html/:/var/www/html/:ro
-  worker-hash:
+  worker-indexer:
     build:
       context: .
       dockerfile: Dockerfile-cli
 #    restart: always
-#    environment:
+    environment:
+    - WAIT_WHEN_DONE=3600
+    command: /app/app.php indexer
     volumes:
     - ./src/html/:/app/:ro
   worker-conv:
@@ -24,6 +26,8 @@ services:
       context: .
       dockerfile: Dockerfile-cli
 #    restart: always
-#    environment:
+    environment:
+    - WAIT_WHEN_DONE=3600
+    command: /app/app.php conv
     volumes:
     - ./src/html/:/app/:ro 

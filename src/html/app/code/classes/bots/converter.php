@@ -1,36 +1,57 @@
 <?php
 
-namespace bots;
-
-class converter {
-
-    public static $json_index = [];
+class Routing {
 
     public static function start() {
-        if (!file_exists("/in/")) die("[ERROR] /in/ Verzeichnis fehlt!".PHP_EOL);
-        if (!file_exists("/data/")) mkdir("/data/");
-        if (!file_exists("/out/")) mkdir("/out/");
+        $p = strpos($_SERVER["REQUEST_URI"],"?");
+		if (!$p) $_SERVER["REQUEST_URIpure"] = $_SERVER["REQUEST_URI"]; else $_SERVER["REQUEST_URIpure"] = substr($_SERVER["REQUEST_URI"],0, $p);
 
-        if (!file_exists("/data/index.json")) file_put_contents("/data/index.json","[]");
-        self::$json_index = json_decode(file_get_contents("/data/index.json"),true);
-
-        foreach (self::$json_index as $row) {
-            $file_in = new \File("/in".$row["filename"]);
-
-            $file_out = new \File("/out/".$row["md5"].".1080p.mp4");
-            if (!$file_out->exists()) {
-                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:1080 -movflags +faststart "'.$file_out->fullname().'"';
-                system($cmd);
-            }
-
-            $file_out = new \File("/out/".$row["md5"].".480p.mp4");
-            if (!$file_out->exists()) {
-                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:480 -movflags +faststart "'.$file_out->fullname().'"';
-                system($cmd);
-            }
+		if (preg_match ("@^\/api\/(?P<namespace>[A-Za-z0-9]+)(\.|\/)(?P<method>[A-Za-z0-9]+)(\.|\/)(?P<format>[a-z]+)@", $_SERVER["REQUEST_URIpure"], $m)) {
+			\API::run($m["namespace"], $m["method"], $m["format"], $_REQUEST);
+			exit(1);
         }
-        echo("[*] ".count(self::$json_index)."files checked...".PHP_EOL);
 
+        switch ($_SERVER["REQUEST_URIpure"]) {
+            case "/":
+                echo('HOMEpage');
+                exit();;
+        }
+
+        if (preg_match("@^/f/h/((?P<md5>[a-f0-9]+).*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
+
+        self::senderror404();
+        exit();
     }
+
+    public static function file_by_hash($param) {
+        $file = new \File("/out/".$param[1]);
+        $md5 = $param["md5"];
+
+        //print_r($_SERVER);
+
+        if (!$file->exists()) self::senderror404();
+
+        if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$file->modified()->getTimestamp() /*|| $etagHeader == $md5*/) {
+            header("HTTP/1.1 304 Not Modified");
+            exit;
+        }
+
+        switch ($file->extension()) {
+            case "mp4":
+                header("Content-Type: video/mp4");
+        }
+        header("Last-Modified: ".gmdate('D, d M Y H:i:s \G\M\T', $file->modified()->getTimestamp()));
+        header("Etag: ".$md5);
+        header("Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revaliddate=86400000, stale-if-error=86400000,immutable");
+        $fs = new \FileStream($file);
+        $fs->start();
+        exit();
+    }
+
+    public static function senderror404() {
+        header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found", true, 404);
+        exit();
+    }
+
 
 }

@@ -17,21 +17,35 @@ class Routing {
                 exit();;
         }
 
-        if (preg_match("@^/f/h/(.+)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
+        if (preg_match("@^/f/h/((?P<md5>[a-f0-9]+).*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
 
         echo('404');
-        print_r($_SERVER);
+        //print_r($_SERVER);
         exit();
     }
 
     public static function file_by_hash($param) {
-        $fn = "/out/".$param[1];
-        echo($fn);
-        if (file_exists($fn)) {
-            readfile($fn);
-            exit();
+        $file = new \File("/out/".$param[1]);
+        $md5 = $param["md5"];
+
+        //print_r($_SERVER);
+
+        if (!$file->exists()) die(404);
+
+        if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$file->modified()->getTimestamp() /*|| $etagHeader == $md5*/) {
+            header("HTTP/1.1 304 Not Modified");
+            exit;
         }
-        print_r($param);
+
+        switch ($file->extension()) {
+            case "mp4":
+                header("Content-Type: video/mp4");
+        }
+        header("Last-Modified: ".gmdate('D, d M Y H:i:s \G\M\T', $file->modified()->getTimestamp()));
+        header("Etag: ".$md5);
+        header("Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revaliddate=86400000, stale-if-error=86400000,immutable");
+        $fs = new \FileStream($file);
+        $fs->start();
         exit();
     }
 

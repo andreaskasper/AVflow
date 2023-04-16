@@ -25,6 +25,12 @@ class Routing {
     }
 
     public static function file_by_hash($param) {
+        $fn = "/out/".$param[1];
+        echo($fn);
+        if (file_exists($fn)) {
+            readfile($fn);
+            exit();
+        }
         print_r($param);
         exit();
     }

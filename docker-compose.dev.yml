@@ -11,6 +11,7 @@ services:
     - 8080:80
     volumes:
     - ./src/html/:/var/www/html/:ro
+#    - ./out/:/out/
   worker-indexer:
     build:
       context: .
@@ -21,6 +22,9 @@ services:
     command: /app/app.php indexer
     volumes:
     - ./src/html/:/app/:ro
+#    - ./in/:/in/
+#    - ./out/:/out/
+#    - ./data/:/data/
   worker-conv:
     build:
       context: .
@@ -31,3 +35,6 @@ services:
     command: /app/app.php conv
     volumes:
     - ./src/html/:/app/:ro 
+#    - ./in/:/in/
+#    - ./out/:/out/
+#    - ./data/:/data/

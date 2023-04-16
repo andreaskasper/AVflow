@@ -41,7 +41,7 @@ switch ($argv[1] ?? "") {
         sleep(3600);
         break;
     case "conv":
-        \bots\conv::start();
+        \bots\converter::start();
         echo("[*] warten".PHP_EOL);
         sleep(3600);
         break;

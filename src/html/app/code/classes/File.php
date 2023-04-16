@@ -16,10 +16,10 @@ class File {
     public function fullname_as_id(): string { $a = $this->fullname(); if (substr($a,0,4) == "/in/") $a = substr($a,3,99999); return $a; }
     public function info() : Array|null { return pathinfo($this->_filename); }
     public function name() : string  { return $this->info()["basename"]; }
-    public function md5() : int { return md5_file($this->_filename); }
+    public function md5() : string { return md5_file($this->_filename); }
     public function size() : int { return filesize($this->_filename); }
     public function sha256() : string { return hash_file("sha256", $this->_filename); }
-    public function modified() : DateTime { new DateTime("@".filemtime($this->_filename)); }
+    public function modified() : DateTime { return new DateTime("@".filemtime($this->_filename)); }
     
     
     public function is_writable() : bool { return is_writable($this->_filename); }

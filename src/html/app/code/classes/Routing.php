@@ -19,18 +19,21 @@ class Routing {
 
         if (preg_match("@^/f/h/((?P<md5>[a-f0-9]+).*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
 
-        echo('404');
-        print_r($_SERVER);
-        exit();
+        self::senderror404();
     }
 
     public static function file_by_hash($param) {
         $file = new \File("/out/".$param[1]);
         $md5 = $param["md5"];
 
-        //print_r($_SERVER);
+        if (!empty($_ENV["TOKEN_SALT"])) {
+            if (empty($_GET["token"]) OR empty($_GET["until"])) self::senderror403("Missing Parameter");
+            if ($_GET["until"] < time()) self::senderror403("Too late");
+            $token = md5($param[0].$_ENV["TOKEN_SALT"].$_GET["until"]);
+            if ($_GET["token"] != $token) self::senderror403("wrong token");
+        }
 
-        if (!$file->exists()) die(404);
+        if (!$file->exists()) self::senderror404();
 
         if (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])==$file->modified()->getTimestamp() /*|| $etagHeader == $md5*/) {
             header("HTTP/1.1 304 Not Modified");
@@ -51,6 +54,13 @@ class Routing {
 
     public static function senderror404() {
         header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found", true, 404);
+        echo("404");
+        exit();
+    }
+
+    public static function senderror403(string $txt) {
+        header($_SERVER["SERVER_PROTOCOL"]." 403 Not Authenticated", true, 404);
+        echo($txt);
         exit();
     }
 

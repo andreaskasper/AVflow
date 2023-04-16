@@ -20,7 +20,7 @@ class Routing {
         if (preg_match("@^/f/h/((?P<md5>[a-f0-9]+).*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
 
         echo('404');
-        //print_r($_SERVER);
+        print_r($_SERVER);
         exit();
     }
 
@@ -46,6 +46,11 @@ class Routing {
         header("Cache-Control: public, max-age=3600, s-maxage=3600, stale-while-revaliddate=86400000, stale-if-error=86400000,immutable");
         $fs = new \FileStream($file);
         $fs->start();
+        exit();
+    }
+
+    public static function senderror404() {
+        header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found", true, 404);
         exit();
     }
 

@@ -20,6 +20,8 @@ class File {
     public function size() : int { return filesize($this->_filename); }
     public function sha256() : string { return hash_file("sha256", $this->_filename); }
     public function modified() : DateTime { return new DateTime("@".filemtime($this->_filename)); }
+    public function move(File $new_file) { if (!$new_file->exists()) rename($this->fullname(), $new_file->fullname()); }
+    public function rename(File $new_file) { if (!$new_file->exists()) rename($this->fullname(), $new_file->fullname()); }
     
     
     public function is_writable() : bool { return is_writable($this->_filename); }

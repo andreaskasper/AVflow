@@ -31,7 +31,7 @@ spl_autoload_register(function($class_name) {
 	return false;
 });
 
-switch ($argv[1] ?? "") {
+switch ($argv[2] ?? $argv[1] ?? "") {
     case "bash":
         system("bash");
         exit();

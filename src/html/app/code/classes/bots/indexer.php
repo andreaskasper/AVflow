@@ -22,7 +22,7 @@ class indexer {
             $data_modified = false;
             $files = scandir($dir);
             foreach ($files as $file) {
-                $file = new File($dir.$file);
+                $file = new \File($dir.$file);
                 if (substr($file->name(),0,1) == ".") continue;
                 if (!$file->is_writable()) continue;
                 if (is_dir($file->fullname())) { $dirs[] = $file->fullname()."/"; continue; }
@@ -54,10 +54,10 @@ class indexer {
         }
     }
 
-    public static function indexdata_by_filename($filename) : Array|false {
+    public static function indexdata_by_filename(\File $file) : Array|false {
         for ($i = 0; $i < count(self::$json_index); $i++) {
             $row = self::$json_index[$i];
-            if ($row["filename"] == $filename) return array($row, $i);
+            if ($row["filename"] == $filename->fullname_as_id()) return array($row, $i);
         }
         return false;
     }

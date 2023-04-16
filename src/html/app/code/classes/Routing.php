@@ -41,8 +41,8 @@ class Routing {
         }
 
         switch ($file->extension()) {
-            case "mp4":
-                header("Content-Type: video/mp4");
+            case "mp4": header("Content-Type: video/mp4"); break;
+            case "mkv": header("Content-Type: video/mkv"); break;
         }
         header("Last-Modified: ".gmdate('D, d M Y H:i:s \G\M\T', $file->modified()->getTimestamp()));
         header("Etag: ".$md5);

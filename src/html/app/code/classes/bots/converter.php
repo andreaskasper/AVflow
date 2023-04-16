@@ -15,17 +15,17 @@ class converter {
         self::$json_index = json_decode(file_get_contents("/data/index.json"),true);
 
         foreach (self::$json_index as $row) {
-            $file_in = "/in".$row["filename"];
+            $file_in = new File("/in".$row["filename"]);
 
-            $file_out = "/out/".$row["md5"].".1080p.mp4";
-            if (!file_exists($file_out)) {
-                $cmd = 'ffmpeg -i "'.$file_in.'" -vf scale=-2:1080 -threads 0 -movflags +faststart "'.$file_out.'"';
+            $file_out = new File("/out/".$row["md5"].".1080p.mp4");
+            if (!$file_out->exists()) {
+                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:1080 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
                 system($cmd);
             }
 
-            $file_out = "/out/".$row["md5"].".480p.mp4";
-            if (!file_exists($file_out)) {
-                $cmd = 'ffmpeg -i "'.$file_in.'" -vf scale=-2:480 -threads 0 -movflags +faststart "'.$file_out.'"';
+            $file_out = new File("/out/".$row["md5"].".480p.mp4");
+            if (!$file_out->exists()) {
+                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:480 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
                 system($cmd);
             }
         }

@@ -6,35 +6,27 @@ services:
       context: .
       dockerfile: Dockerfile-web
     restart: always
-#    environment:
     ports:
     - 8080:80
     volumes:
     - ./src/html/:/var/www/html/:ro
-#    - ./out/:/out/
   worker-indexer:
     build:
       context: .
       dockerfile: Dockerfile-cli
-#    restart: always
+    restart: always
     environment:
     - WAIT_WHEN_DONE=3600
     command: /app/app.php indexer
     volumes:
     - ./src/html/:/app/:ro
-#    - ./in/:/in/
-#    - ./out/:/out/
-#    - ./data/:/data/
   worker-conv:
     build:
       context: .
       dockerfile: Dockerfile-cli
-#    restart: always
+    restart: always
     environment:
     - WAIT_WHEN_DONE=3600
     command: /app/app.php conv
     volumes:
     - ./src/html/:/app/:ro 
-#    - ./in/:/in/
-#    - ./out/:/out/
-#    - ./data/:/data/

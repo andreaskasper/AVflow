@@ -19,32 +19,39 @@ class indexer {
         while (isset($dirs[$i])) {
             $dir = $dirs[$i];
             $i++;
+            $data_modified = false;
             $files = scandir($dir);
             foreach ($files as $file) {
-                if (substr($file,0,1) == ".") continue;
-                if (!is_writable($dir.$file)) continue;
-                if (is_dir($dir.$file)) { $dirs[] = $dir.$file."/"; continue; }
-                echo("[💾] ".$dir.$file.PHP_EOL);
-                $pi = pathinfo($dir.$file);
-                if (!self::is_videofile($pi)) continue;
-                $file2 = substr($dir.$file, 3, 9999);
+                $file = new File($dir.$file);
+                if (substr($file->name(),0,1) == ".") continue;
+                if (!$file->is_writable()) continue;
+                if (is_dir($file->fullname())) { $dirs[] = $file->fullname()."/"; continue; }
+                echo("[💾] ".$file->fullname().PHP_EOL);
+                if ($file->is_video()) continue;
+
+                $file2 = $file->fullname_as_id();
                 $row = self::indexdata_by_filename($file2);
                 if ($row == false) {
-                    $md5 = md5_file($dir.$file);
                     self::$json_index[] = array(
                         "filename" => $file2,
-                        "filesize" => filesize($dir.$file),
-                        "md5" => $md5
+                        "filesize" => $file->size(),
+                        "modified" => $file->modified()->getTimestamp(),
+                        "md5" => $file->md5()
                     );
-                    file_put_contents("/data/index.json", json_encode(self::$json_index));
+                    $data_modified = true;
+                }
+                if ($row[0]["filesize"] != $file->size()) {
+                    self::$json_index[$row[1]] = array(
+                        "filename" => $file2,
+                        "filesize" => $file->size(),
+                        "modified" => $file->modified()->getTimestamp(),
+                        "md5" => $file->md5()
+                    );
+                    $data_modified = true;
                 }
             }
+            if ($data_modified) file_put_contents("/data/index.json", json_encode(self::$json_index));
         }
-    }
-
-    public static function is_videofile(Array $arr) : bool {
-        if (strtolower($arr["extension"] ?? "") == "mp4") return true;
-        return false;
     }
 
     public static function indexdata_by_filename($filename) : Array|false {

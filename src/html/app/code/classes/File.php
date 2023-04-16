@@ -13,14 +13,17 @@ class File {
     public function exists() : bool { return file_exists($this->_filename); }
     public function extension() : string  { return $this->fileinfo()["extension"]; }
     public function fullname() : string  { return $this->_filename; }
+    public function fullname_as_id(): string { $a = $this->fullname(); if (substr($a,0,4) == "/in/") $a = substr($a,3,99999); return $a; }
     public function info() : Array|null { return pathinfo($this->_filename); }
     public function name() : string  { return $this->fileinfo()["basename"]; }
     public function md5() : int { return md5_file($this->_filename); }
     public function size() : int { return filesize($this->_filename); }
     public function sha256() : string { return hash_file("sha256", $this->_filename); }
+    public function modified() : DateTime { new DateTime("@".filemtime($this->_filename)); }
     
     
     public function is_writable() : bool { return is_writable($this->_filename); }
     public function is_writeable() : bool { return is_writable($this->_filename); }
+    public function is_video() : bool { if (strtolower($arr["extension"] ?? "") == "mp4") return true; return false; }
 
 }

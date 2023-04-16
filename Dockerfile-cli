@@ -3,8 +3,8 @@ FROM php:8-cli
 LABEL org.opencontainers.image.authors="Andreas Kasper <andreas.kasper.github@goo1.de>"
 
 WORKDIR /app/
-ENTRYPOINT ["/app/app.php"]
-CMD ["app.php"]
+ENTRYPOINT ["php","/app/app.php"]
+CMD ["php","app.php"]
 
 RUN apt-get update -y \
     && mkdir /in \

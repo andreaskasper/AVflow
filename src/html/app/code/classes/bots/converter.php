@@ -19,14 +19,12 @@ class converter {
 
             $file_out = new \File("/out/".$row["md5"].".1080p.mp4");
             if (!$file_out->exists()) {
-                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:1080 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
-                system($cmd);
+                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:1080 -movflags +faststart "{{out}}"');
             }
 
             $file_out = new \File("/out/".$row["md5"].".480p.mp4");
             if (!$file_out->exists()) {
-                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:480 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
-                system($cmd);
+                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:480 -movflags +faststart "{{out}}"');
             }
 
             $file_out = new \File("/out/".$row["md5"].".240p.mp4");
@@ -38,5 +36,3 @@ class converter {
         echo("[*] ".count(self::$json_index)."files checked...".PHP_EOL);
 
     }
-
-}

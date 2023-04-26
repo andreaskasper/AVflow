@@ -21,6 +21,7 @@ class Routing {
         }
 
         if (preg_match("@^/f/h/((?P<md5>[a-f0-9]+).*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::file_by_hash($m); exit(); }
+        if (preg_match("@^(/explorer|/files)(?P<path>/.*)$@", $_SERVER["REQUEST_URIpure"], $m)) { self::authentication1(); require_once(__DIR__."/../../design/page_fileexplorer.php"); exit(); }
 
         self::senderror404();
     }
@@ -65,6 +66,17 @@ class Routing {
         header($_SERVER["SERVER_PROTOCOL"]." 403 Not Authenticated", true, 404);
         echo($txt);
         exit();
+    }
+
+    public static function authentication1() {
+        if (!empty($_ENV["USER_NAME"])) {
+            if ((($_SERVER['PHP_AUTH_USER'] ?? "") != $_ENV["USER_NAME"]) OR (($_SERVER['PHP_AUTH_PW'] ?? "") != ($_ENV["USER_PASSWORD"] ?? ""))) {
+                header('WWW-Authenticate: Basic realm="AVflow"');
+                header('HTTP/1.0 401 Unauthorized');
+                echo "Please enter username and password to enter this function";
+                exit;
+            }
+        }
     }
 
 

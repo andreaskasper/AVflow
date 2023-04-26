@@ -2,7 +2,7 @@
 
 class ffmpeg {
 
-    public static function convert(File $file_id, File $file_out, string $cmd) {
+    public static function convert(File $file_in, File $file_out, string $cmd) {
         $file_tmp = new File("/tmp/".md5(microtime(true).rand(0,999999)).".".$file_out->extension());
         if ($file_tmp->exists()) throw new \Exception("tmp file gibt es noch");
 

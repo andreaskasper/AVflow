@@ -17,22 +17,35 @@ class converter {
         foreach (self::$json_index as $row) {
             $file_in = new \File("/in".$row["filename"]);
 
-            $file_out = new \File("/out/".$row["md5"].".1080p.mp4");
-            if (!$file_out->exists()) {
-                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:1080 -movflags +faststart "{{out}}"');
-            }
+            if (empty($_ENV["CONVERTS"])) $_ENV["CONVERTS"] = "1080p.mp4,480p.mp4,240p.mp4";
 
-            $file_out = new \File("/out/".$row["md5"].".480p.mp4");
-            if (!$file_out->exists()) {
-                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:480 -movflags +faststart "{{out}}"');
-            }
-
-            $file_out = new \File("/out/".$row["md5"].".240p.mp4");
-            if (!$file_out->exists()) {
-                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:240 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
-                system($cmd);
+            
+            foreach (explode(",", $_ENV["CONVERTS"]) as $c) {
+                switch (trim($c)) {
+                    default:
+                        case "1080p.mp4":
+                            $file_out = new \File("/out/".$row["md5"].".1080p.mp4");
+                            if (!$file_out->exists()) {
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:1080 -movflags +faststart "{{out}}"');
+                            }
+                            break;
+                        case "480p.mp4":
+                            $file_out = new \File("/out/".$row["md5"].".480p.mp4");
+                            if (!$file_out->exists()) {
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:480 -movflags +faststart "{{out}}"');
+                            }
+                            break;
+                        case "240p.mp4":
+                            $file_out = new \File("/out/".$row["md5"].".240p.mp4");
+                            if (!$file_out->exists()) {
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:240 -movflags +faststart "{{out}}"');
+                            }
+                            break;
+                        echo("[ERR] unknown Converter: ".$c.PHP_EOL);
+                        break;
+                }
             }
         }
         echo("[*] ".count(self::$json_index)."files checked...".PHP_EOL);
-
     }
+}

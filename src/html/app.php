@@ -45,6 +45,12 @@ switch ($argv[2] ?? $argv[1] ?? "") {
         echo("[*] warten".PHP_EOL);
         sleep(3600);
         break;
+	case "garbagecollector":
+		\bots\garbagecollector::start();
+		echo("[*] warten".PHP_EOL);
+		sleep(3600);
+		break;
     default:
         echo("[ERROR] Unknown entrypoint or bot...".PHP_EOL);
+		echo(($argv[2] ?? $argv[1] ?? "").PHP_EOL);
 }

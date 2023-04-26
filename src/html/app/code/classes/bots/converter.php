@@ -28,6 +28,12 @@ class converter {
                 $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:480 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
                 system($cmd);
             }
+
+            $file_out = new \File("/out/".$row["md5"].".240p.mp4");
+            if (!$file_out->exists()) {
+                $cmd = 'ffmpeg -i "'.$file_in->fullname().'" -vf scale=-2:240 -threads 0 -movflags +faststart "'.$file_out->fullname().'"';
+                system($cmd);
+            }
         }
         echo("[*] ".count(self::$json_index)."files checked...".PHP_EOL);
 

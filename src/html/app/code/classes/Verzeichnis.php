@@ -9,6 +9,7 @@ class Verzeichnis {
         $this->_path = $path;
     }
     
+    public function createsub(string $new_foldername) : Verzeichnis { $v = new Verzeichnis($this->path().$new_foldername."/"); mkdir($v->path()); return $v; }
     public function exists() : bool { return file_exists($this->_path); }
     public function modified() : DateTime { return new DateTime("@".filemtime($this->_path)); }
     public function path() : string { return $this->_path; }

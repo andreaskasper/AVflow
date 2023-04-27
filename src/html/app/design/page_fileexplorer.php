@@ -8,6 +8,10 @@ $dir = new Verzeichnis(str_replace("//","/","/in".$path."/"));
 
 if (!empty($_REQUEST["act"])) {
     switch ($_REQUEST["act"]) {
+        case "createsub":
+            if(empty($_POST["name"])) die("No Foldername");
+            $dir2 = $dir->createsub($_POST["name"]);
+            die(json_encode(array("success" => $dir2->exists())));
         case "upload":
             copy($_FILES["file"]["tmp_name"], "/tmp/".$_POST["dzuuid"]."_".$_POST["dzchunkindex"]);
             if ($_POST["dzchunkindex"] == $_POST["dztotalchunkcount"] -1) {
@@ -35,7 +39,7 @@ if (!empty($_REQUEST["act"])) {
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" crossorigin="anonymous">
         <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -55,7 +59,8 @@ if (!empty($_REQUEST["act"])) {
             </div>
         </div>
 
-        <section class="container">
+        <section id="vueapp3" class="container"><div class="d-none">
+            <div class="px-2 py-1 mb-3 border" style="background: #f0f0f0;"><button class="btn btn-sm btn-outline-secondary" @click="showmodalnewfolder();" type="button"><i class="fa-regular fa-folder-plus"></i> new folder</button></div>
             <table id="datatable01" class="table table-striped w-100 border">
                 <thead>
                     <tr>
@@ -63,6 +68,7 @@ if (!empty($_REQUEST["act"])) {
                         <th>Hash</th>
                         <th>Size</th>
                         <th>Modified</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -81,12 +87,14 @@ if (!empty($_REQUEST["act"])) {
                         echo('<td></td>');
                         echo('<td></td>');
                         echo('<td></td>');
+                        echo('<td></td>');
                         echo('</tr>');
                         continue;
                     }
                     if (substr($file,0,1) == ".") {
                         echo('<tr style="opacity: 0.5;">');
                         echo('<td>'.html($file).'</td>');
+                        echo('<td></td>');
                         echo('<td></td>');
                         echo('<td></td>');
                         echo('<td></td>');
@@ -103,6 +111,17 @@ if (!empty($_REQUEST["act"])) {
                         echo('<td></td>');
                         echo('<td>'.$dir2->modified()->format("Y-m-d H:i:s").'</td>');
                         echo('<td></td>');
+                        echo('<td>');
+                        echo('<div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-link" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-regular fa-ellipsis-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash-can"></i> delete</button></li>
+
+                            </ul>
+                        </div>');
+                    echo('</td>');
                         echo('</tr>');
                         continue;
                     }
@@ -128,6 +147,16 @@ if (!empty($_REQUEST["act"])) {
                         }
                     }
                     echo('</td>');
+                    echo('<td>');
+                    echo('<div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-link" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-regular fa-ellipsis-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash-can"></i> delete</button></li>
+                        </ul>
+                    </div>');
+                    echo('</td>');
 
                     /*echo('<td>'.html($row["md5"]).'</td>');
                     echo('<td>'.formatBytes($row["filesize"],1).'B</td>');
@@ -149,9 +178,27 @@ if (!empty($_REQUEST["act"])) {
 </div></div>
 
 <?php } ?>
+
+<div class="modal fade" id="ModalNewFolder" ref="ModalNewFolder" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-regular fa-folder-plus"></i> Create new folder in directory</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <INPUT type="text" class="form-control" ref="FldNewFolderName" value="NewFolder"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" @click="btncreatefolder();" class="btn btn-primary">Create Folder</button>
+      </div>
+    </div>
+  </div>
+</div>
             
             
-       </section>
+        </div></section>
         <script type="module">
             Vue.createApp({
                 components: {
@@ -171,17 +218,30 @@ if (!empty($_REQUEST["act"])) {
                     console.log("mounted vueapp2",this.me);
                 },
                 methods: {
+                    showmodalnewfolder: function() {
+                        console.log("Modal show new Folder");
+                        $("#ModalNewFolder").modal("show");
+                    },
+                    btncreatefolder: function() {
+
+                        var name = this.$refs.FldNewFolderName.value;
+                        console.log("Create New Folder", name);
+                        this.roundact("createsub",{"name": name}, function() {
+                            document.location.href=document.location.href;
+                        });
+                    },
                     roundact: function(method, atts, onsuccess, onerror) {
                         if (typeof atts == "undefined") atts = {};
                         atts["act"] = method;
                         $.post("?", atts, function(json) {
                             console.log("ACT result", json);
+                            if (typeof(onsuccess) !== "undefined") onsuccess(json);
                         }, "json");
                     }
                 }
                 }).mount("#vueapp3");
                 $(document).ready(function () {
-                    $('#datatable01').DataTable();
+                    $('#datatable01').DataTable({ "pageLength": 100 });
                     $("div#fileupload").dropzone({ url: "?act=upload", "maxFilesize": 99999, "chunking": true, "retryChunks": true });
                 });
         </script>

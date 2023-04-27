@@ -27,6 +27,6 @@ class File {
     
     public function is_writable() : bool { return is_writable($this->_filename); }
     public function is_writeable() : bool { return is_writable($this->_filename); }
-    public function is_video() : bool { if (strtolower($arr["extension"] ?? "") == "mp4") return true; return false; }
+    public function is_video() : bool { return in_array(strtolower($this->extension()), array("mp4","mkv","mov")); }
 
 }

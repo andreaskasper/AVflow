@@ -117,11 +117,16 @@ if (!empty($_REQUEST["act"])) {
                     echo(html($f->name()).'</td>');
                     if (empty($md5)) echo('<td class="text-center"><i class="fa-solid fa-hourglass"></i></td>');
                     else echo('<td>'.html($md5).'</td>');
-                    echo('<td>'.formatBytes($f->size(),1).'</td>');
+                    echo('<td data-order="'.$f->size().'" style="text-align: right;">'.formatBytes($f->size(),1).'</td>');
                     echo('<td>'.html($f->modified()->format("Y-m-d H:i:s")).'</td>');
                     echo('<td>');
+                    if (!empty($md5)) {
                     $m2 = glob('/out/'.$md5.'*');
-                    print_r($m2);
+                        foreach ($m2 as $a) {
+                            if (!preg_match("@^/out/[0-9a-f]+(?P<ext>.*)@", $a, $m)) continue;
+                            echo('<a href="/f/h/'.substr($a,5,999).'" TITLE="'.$m["ext"].'"><i class="fa-regular fa-file-arrow-down"></i></a>');
+                        }
+                    }
                     echo('</td>');
 
                     /*echo('<td>'.html($row["md5"]).'</td>');

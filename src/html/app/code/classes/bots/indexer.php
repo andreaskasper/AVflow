@@ -16,19 +16,19 @@ class indexer {
 
         $dirs = array("/in/");
         $i = 0;
+        $data_modified = false;
         while (isset($dirs[$i])) {
             $dir = $dirs[$i];
             $i++;
-            $data_modified = false;
             $files = scandir($dir);
             foreach ($files as $file) {
                 $file = new \File($dir.$file);
                 echo(">>".$file->fullname().PHP_EOL);
                 if (substr($file->name(),0,1) == ".") continue;
                 if (is_dir($file->fullname())) { $dirs[] = $file->fullname()."/"; continue; }
-                if (!$file->exists()) continue;
+                if (!$file->exists()) { continue; }
                 echo("[💾] ".$file->fullname().PHP_EOL);
-                if ($file->is_video()) continue;
+                if (!$file->is_video()) {echo("No VideoFile".PHP_EOL); continue; }
 
                 $row = self::indexdata_by_filename($file);
                 if ($row == false) {
@@ -53,7 +53,7 @@ class indexer {
                 }
             }
         }
-        if ($data_modified) file_put_contents("/data/index.json", json_encode(self::$json_index));
+        if ($data_modified) { file_put_contents("/data/index.json", json_encode(self::$json_index)); echo("index.json saved".PHP_EOL); }
     }
 
     public static function indexdata_by_filename(\File $file) : Array|false {

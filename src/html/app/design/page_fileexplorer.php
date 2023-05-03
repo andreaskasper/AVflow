@@ -118,7 +118,6 @@ if (!empty($_REQUEST["act"])) {
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><button class="dropdown-item" type="button"><i class="fa-solid fa-trash-can"></i> delete</button></li>
-
                             </ul>
                         </div>');
                     echo('</td>');

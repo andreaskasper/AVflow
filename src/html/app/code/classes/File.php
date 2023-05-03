@@ -29,4 +29,13 @@ class File {
     public function is_writeable() : bool { return is_writable($this->_filename); }
     public function is_video() : bool { return in_array(strtolower($this->extension()), array("mp4","mkv","mov")); }
 
+    public function video_duration() : float { if (!$this->is_video()) return 0; $json = $this->ffmpegdata(); return $json["format"]["duration"] ?? 0; }
+
+    public function ffmpegdata() : Array {
+        exec('ffprobe -v quiet -print_format json -show_format -show_streams "'.$this->fullname().'"', $a);
+        return json_decode(implode(" ", $a), true);
+    }
+
+
+
 }

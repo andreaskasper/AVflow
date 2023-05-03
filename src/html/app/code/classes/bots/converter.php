@@ -41,6 +41,14 @@ class converter {
                                 \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:240 -movflags +faststart "{{out}}"');
                             }
                             break;
+                        case "poster.half.jpg":
+                            $file_out = new \File("/out/".$row["md5"].".poster.half.jpg");
+                            if (!$file_out->exists()) {
+                                $sec = $file_in->video_duration();
+                                if ($sec == 0) break;
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -ss '.($sec / 2).' -frames:v 1 "{{out}}"');
+                            }
+                            break;
                         echo("[ERR] unknown Converter: ".$c.PHP_EOL);
                         break;
                 }

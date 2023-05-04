@@ -30,7 +30,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: /.
+          context: .
           file: Dockerfile-web
           push: true
           tags: andreaskasper/avflow:web
@@ -38,7 +38,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: /.
+          context: .
           file: Dockerfile-cli
           push: true
           tags: andreaskasper/avflow:cli

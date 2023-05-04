@@ -23,7 +23,7 @@ VOLUME /in
 VOLUME /out
 VOLUME /data
 
-ADD /src/html /app/
+ADD src/html /app/
 
 RUN chmod 0777 /app/app.php
 

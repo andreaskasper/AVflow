@@ -47,6 +47,9 @@ if (!empty($_REQUEST["act"])) {
         <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
 
         <link rel="icon" type="image/png" href="//<?=$_SERVER["HTTP_HOST"]; ?>/skins/default/favicon_128.png" />
+        <style>
+            table a { color: inherit; text-decoration: none; }
+        </style>
 
     </head>
     <body>
@@ -82,7 +85,7 @@ if (!empty($_REQUEST["act"])) {
                     if ($file == "..") {
                         if ($m["path"] == "/") continue;
                         echo('<tr>');
-                        echo('<td><a href="/explorer'.htmlattr(removeLastFolder($m["path"])).'"><i class="fa-solid fa-folder-arrow-up"></i> folder up</a></td>');
+                        echo('<td data-order="'.$file.'"><a href="/explorer'.htmlattr(removeLastFolder($m["path"])).'"><i class="fa-solid fa-folder-arrow-up"></i> folder up</a></td>');
                         echo('<td></td>');
                         echo('<td></td>');
                         echo('<td></td>');
@@ -106,7 +109,7 @@ if (!empty($_REQUEST["act"])) {
                     if (is_dir($f->fullname())) {
                         $dir2 = new Verzeichnis($f->fullname());
                         echo('<tr>');
-                        echo('<td><a href="/explorer'.$path.$file.'/"><i class="fa-solid fa-folder"></i> '.html($file).'</a></td>');
+                        echo('<td data-order="'.$file.'"><a href="/explorer'.$path.$file.'/"><i class="fa-solid fa-folder"></i> '.html($file).'</a></td>');
                         echo('<td></td>');
                         echo('<td></td>');
                         echo('<td>'.$dir2->modified()->format("Y-m-d H:i:s").'</td>');
@@ -126,8 +129,9 @@ if (!empty($_REQUEST["act"])) {
                     }
                     $md5 = hashbyfile($f);
                     echo('<tr>');
-                    echo('<td>');
-                    switch ($f->extension()) {
+                    echo('<td data-order="'.$file.'">');
+                    switch (strtolower($f->extension())) {
+                        case "mov": echo('<i class="fa-regular fa-file-video"></i> '); break;
                         case "mp4": echo('<i class="fa-regular fa-file-video"></i> '); break;
                         default:
                             echo('<i class="fa-regular fa-file"></i> '); break;
@@ -139,11 +143,21 @@ if (!empty($_REQUEST["act"])) {
                     echo('<td>'.html($f->modified()->format("Y-m-d H:i:s")).'</td>');
                     echo('<td>');
                     if (!empty($md5)) {
+                    $trans = array();
                     $m2 = glob('/out/'.$md5.'*');
                         foreach ($m2 as $a) {
                             if (!preg_match("@^/out/[0-9a-f]+(?P<ext>.*)@", $a, $m)) continue;
-                            echo('<a href="/f/h/'.substr($a,5,999).'" TITLE="'.$m["ext"].'"><i class="fa-regular fa-file-arrow-down"></i></a>');
+                            $trans[] = $m;
+                            //echo('<a href="/f/h/'.substr($a,5,999).'" class="pr-1" TITLE="'.$m["ext"].'"><i class="fa-regular fa-file-arrow-down"></i></a>');
                         }
+                    }
+                    if (count($trans) > 0) {
+                    echo('<div class="btn-group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" >Transcoded</button>
+                    <ul class="dropdown-menu dropdown-menu-end">');
+                     foreach ($trans as $a) echo('<li><a href="/f/h/'.substr($a[0],5,999).'" TITLE="'.$a["ext"].'." class="dropdown-item" TARGET="_blank">'.$a["ext"].'</a></li>'); 
+                    echo('</ul>
+                  </div>');
                     }
                     echo('</td>');
                     echo('<td>');

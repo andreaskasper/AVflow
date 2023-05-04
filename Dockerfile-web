@@ -16,4 +16,4 @@ VOLUME /in
 VOLUME /out
 VOLUME /data
 
-ADD /src/html /var/www/html/
+ADD src/html /var/www/html/

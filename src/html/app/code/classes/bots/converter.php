@@ -26,19 +26,19 @@ class converter {
                         case "1080p.mp4":
                             $file_out = new \File("/out/".$row["md5"].".1080p.mp4");
                             if (!$file_out->exists()) {
-                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:1080 -movflags +faststart "{{out}}"');
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:1080 -c:v libx264 -c:a libfaac -ac 2 -vpre baseline -movflags +faststart "{{out}}"');
                             }
                             break;
                         case "480p.mp4":
                             $file_out = new \File("/out/".$row["md5"].".480p.mp4");
                             if (!$file_out->exists()) {
-                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:480 -movflags +faststart "{{out}}"');
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:480 -c:v libx264 -c:a libfaac -ac 2 -vpre baseline -movflags +faststart "{{out}}"');
                             }
                             break;
                         case "240p.mp4":
                             $file_out = new \File("/out/".$row["md5"].".240p.mp4");
                             if (!$file_out->exists()) {
-                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:240 -movflags +faststart "{{out}}"');
+                                \ffmpeg::convert($file_in, $file_out, 'ffmpeg -i "{{in}}" -vf scale=-2:240 -c:v libx264 -c:a libfaac -ac 2 -vpre baseline -movflags +faststart "{{out}}"');
                             }
                             break;
                         case "poster.half.jpg":

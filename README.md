@@ -50,7 +50,7 @@ $ docker run -d -h example.com -p 8080:80  andreaskasper/avflow:latest
 - [ ] Profit
 
 ### Links
-[🐋 Docker Hub]([https://hub.docker.com/r/andreaskasper/avflow](https://hub.docker.com/r/andreaskasper/avflow))
+[🐋 Docker Hub](https://hub.docker.com/r/andreaskasper/avflow)
 
 ### support the projects :hammer_and_wrench:
 [![donate via Patreon](https://img.shields.io/badge/Donate-Patreon-green.svg)](https://www.patreon.com/AndreasKasper)

@@ -26,18 +26,20 @@ $ docker run -d -h example.com -p 8080:80  andreaskasper/avflow:latest
 ```
 
 ### Environment Parameters
-| Parameter     | Description                                             | Example       |
-| ------------- |:-------------------------------------------------------:|:-------------:|
-| API_KEY       | The password/token you wanna use to access your metrics | secret123     |
+| Parameter     | Description                                             | Example                     |
+| ------------- |:-------------------------------------------------------:|:---------------------------:|
+| USER_NAME     | Username to login to the fileexplorer                   |                             |
+| USER_PASSWORD | Password to login to the fileexplorer                   |                             |
+| CONVERTS      | Converting formats                                      | 1080p.mp4,480p.mp4,240p.mp4 |
 
 
 
 ### Folders:
-| Folder        | Description               |
-| ------------- |:-------------------------:|
-| /in | Where all the incomming files are |
-| /out | Where all the converted files are |
-| /config | All config files |
+| Folder        | Description                       |
+| ------------- |:---------------------------------:|
+| /in           | Where all the incomming files are |
+| /out          | Where all the converted files are |
+| /data         | All data files including config   |
 
 
 
